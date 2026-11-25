@@ -492,11 +492,22 @@ footer{border-top:1px solid var(--line);padding:28px 0 40px;color:var(--muted);f
     "قواعد: لا تطلب أبدًا مفتاحًا خاصًا أو عبارة استرداد أو كلمات مرور، وحذّر العميل من مشاركتها. لا تعطِ نصائح استثمارية أو قانونية. لا تؤكد حالة طلب محدد لأنك لا تملك وصولًا إلى نظام الطلبات. لا تذكر عناوين محافظ إيداع ولا أرقام تواصل. إذا لم تعرف الجواب (مثل مدة التنفيذ المحددة) فاعترف بذلك واقترح التواصل مع فريق الدعم."
   ].join("\n");
   var hist=[], sample=null, busy=false, ready=null;
+  var WORKER_URL=(location.hostname.slice(-10)==="github.io")?"https://sparkling-lab-242dfluxpay-support.ahsbhehn.workers.dev":"", pending=null;
   function add(cls,text){
     var d=document.createElement("div"); d.className="m "+cls; d.textContent=text;
     var b=$("ch-b"); b.appendChild(d); b.scrollTop=b.scrollHeight; return d;
   }
   async function init(){
+    if(WORKER_URL){
+      sample=async function(){
+        var res=await fetch(WORKER_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(pending)});
+        if(res.status===429){var e=new Error("rate");e.code="rate_limited";throw e}
+        if(!res.ok) throw new Error("bad");
+        var j=await res.json();
+        return {text:j.text||""};
+      };
+      return;
+    }
     try{ if(window.claude&&window.claude.use) sample=await window.claude.use("sample"); }catch(e){}
     if(!sample){ add("a","الدعم الذكي غير متاح في هذا العرض حاليًا."); $("ch-i").disabled=true; $("ch-s").disabled=true; }
   }
@@ -519,6 +530,7 @@ footer{border-top:1px solid var(--line);padding:28px 0 40px;color:var(--muted);f
     var tr=hist.slice(-7,-1).map(function(m){return (m.role==="user"?"العميل: ":"المساعد: ")+m.content}).join("\n");
     var prompt=INSTR+(tr?"\n\nالمحادثة السابقة:\n"+tr:"")+"\n\nرسالة العميل الجديدة:\n"+t;
     try{
+      pending={message:t,history:tr};
       var r=await sample(prompt,{cache:false,modelTier:"quick",onText:function(x){
         el.textContent=(x.text&&x.text!=="Thinking...")?x.text:"…";
         $("ch-b").scrollTop=$("ch-b").scrollHeight;
