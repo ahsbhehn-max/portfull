@@ -160,6 +160,14 @@ footer{border-top:1px solid var(--line);padding:28px 0 40px;color:var(--muted);f
   .net-list{grid-template-columns:1fr}
   nav{display:none}
 }
+
+.fq{display:block;width:100%;text-align:start;border:1px solid var(--line);background:var(--bg);color:var(--ink);font:inherit;font-size:15px;padding:11px 14px;border-radius:14px;cursor:pointer;transition:border-color .2s ease,transform .15s ease}
+.fq:hover{border-color:var(--accent)}
+.fq:active{transform:scale(.98)}
+.fq.back{color:var(--accent);font-weight:700}
+.ct-t{font-size:14px;color:var(--muted);margin-top:6px}
+.ct-row{display:flex;gap:8px}
+.ct{flex:1;text-align:center;text-decoration:none;padding:11px;border-radius:12px;background:linear-gradient(135deg,var(--accent),var(--accent3));color:var(--accent-ink);font-weight:700;font-size:15px}
 </style>
 </head>
 <body>
@@ -467,86 +475,54 @@ footer{border-top:1px solid var(--line);padding:28px 0 40px;color:var(--muted);f
 </script>
 <button class="chat-fab" id="fab" type="button" aria-expanded="false" aria-controls="chat">💬 الدعم الفني</button>
 <section class="chat" id="chat" hidden aria-label="الدعم الفني">
-  <div class="ch-h"><span>دعم FluxPay</span><button type="button" id="ch-x" aria-label="إغلاق">×</button></div>
-  <div class="ch-b" id="ch-b">
-    <div class="m a">أهلًا! أنا مساعد FluxPay. اسألني عن البيع، الشبكات، العمولة أو طرق الاستلام.</div>
-    <div class="qs" id="qs"><button type="button">كم العمولة؟</button><button type="button">كيف أبيع USDT؟</button><button type="button">أي شبكة أختار؟</button><button type="button">هل يمكن إلغاء الطلب؟</button></div>
-  </div>
-  <div class="ch-f"><input id="ch-i" type="text" placeholder="اكتب سؤالك" autocomplete="off"><button type="button" id="ch-s">إرسال</button></div>
+  <div class="ch-h"><span>الدعم الفني</span><button type="button" id="ch-x" aria-label="إغلاق">×</button></div>
+  <div class="ch-b" id="ch-b"></div>
 </section>
 <script>
 (function(){
   var $=function(i){return document.getElementById(i)};
-  var INSTR=[
-    "أنت مساعد الدعم الفني لموقع FluxPay. أجب باللغة التي يكتب بها العميل، وبالعربية بلهجة بسيطة وودودة افتراضيًا. اجعل الرد قصيرًا (حتى 4 جمل) نصًا عاديًا بدون تنسيق markdown.",
-    "معلومات الخدمة:",
-    "- FluxPay تتيح بيع USDT واستلام ثمنه بالشيقل (ILS) أو الدينار الأردني (JOD) أو الدولار (USD).",
-    "- شراء USDT غير متاح حاليًا.",
-    "- العمولة 0.5% وهي محسوبة ضمن السعر المعروض، ورسوم الشبكة تُحدَّد عند التنفيذ.",
-    "- حدود الطلب من 100 إلى 5000 USDT.",
-    "- الشبكات: TRC20 (Tron وعناوينها تبدأ بـ T)، ERC20 (Ethereum) وBEP20 (BNB Smart Chain) وعناوينهما تبدأ بـ 0x. الإرسال على شبكة خطأ قد يؤدي إلى فقدان المبلغ.",
-    "- طرق الاستلام: Jawwal Pay وBank of Palestine وCliQ وInstaPay وVodafone Cash وSTC Pay وWise وSEPA Instant وM-Pesa وOrange Money أو تحويل بنكي.",
-    "- الخطوات: كتابة المبلغ، اختيار الشبكة، اختيار المحفظة وكتابة الاسم ورقم الحساب، مراجعة الطلب، ثم إرسال USDT إلى العنوان الظاهر في المراجعة.",
-    "- الإلغاء ممكن قبل إرسال USDT، وبعد الإرسال لا يمكن التراجع عن تحويل البلوكتشين.",
-    "- الأسعار تتحدث وقت الطلب ويظهر المبلغ النهائي قبل التأكيد.",
-    "قواعد: لا تطلب أبدًا مفتاحًا خاصًا أو عبارة استرداد أو كلمات مرور، وحذّر العميل من مشاركتها. لا تعطِ نصائح استثمارية أو قانونية. لا تؤكد حالة طلب محدد لأنك لا تملك وصولًا إلى نظام الطلبات. لا تذكر عناوين محافظ إيداع ولا أرقام تواصل. إذا لم تعرف الجواب (مثل مدة التنفيذ المحددة) فاعترف بذلك واقترح التواصل مع فريق الدعم."
-  ].join("\n");
-  var hist=[], sample=null, busy=false, ready=null;
-  var WORKER_URL=/github\.io$/.test(location.hostname)?"https://sparkling-lab-242dfluxpay-support.ahsbhehn.workers.dev":"", pending=null;
-  function add(cls,text){
-    var d=document.createElement("div"); d.className="m "+cls; d.textContent=text;
-    var b=$("ch-b"); b.appendChild(d); b.scrollTop=b.scrollHeight; return d;
+  // أضف رقم واتساب (مع رمز الدولة، أرقام فقط) و/أو اسم مستخدم تيليجرام ليظهر زر التواصل
+  var WA="", TG="";
+  var FAQ=[
+    {q:"كم العمولة؟",a:"العمولة 0.5% على البيع، وهي محسوبة ضمن السعر المعروض. رسوم الشبكة تُحدَّد عند التنفيذ ويظهر المبلغ النهائي قبل التأكيد."},
+    {q:"كيف أبيع USDT؟",a:"1. اكتب مبلغ USDT واختر عملتك.\n2. اختر الشبكة.\n3. اختر المحفظة واكتب اسمك ورقم حسابك.\n4. راجع الطلب ثم أرسل USDT إلى العنوان الظاهر، وبعدها نحوّل لك المال."},
+    {q:"أي شبكة أختار؟",a:"اختر الشبكة التي تدعمها محفظتك: TRC20 (Tron، العنوان يبدأ بـ T)، أو ERC20 (Ethereum)، أو BEP20 (BNB Smart Chain)، وعنوانهما يبدأ بـ 0x. يجب أن تطابق الشبكة التي ترسل منها الشبكة المختارة في الطلب."},
+    {q:"ما الحد الأدنى والأقصى للطلب؟",a:"من 100 إلى 5000 USDT للطلب الواحد."},
+    {q:"ما طرق الاستلام المتاحة؟",a:"Jawwal Pay، Bank of Palestine، CliQ، InstaPay، Vodafone Cash، STC Pay، Wise، SEPA Instant، M-Pesa، Orange Money، أو تحويل بنكي."},
+    {q:"كم تستغرق عملية التحويل؟",a:"تختلف المدة حسب طريقة الاستلام التي تختارها. لتأكيد مدة طلبك تواصل مع فريق الدعم."},
+    {q:"هل يمكن إلغاء الطلب؟",a:"نعم، قبل إرسال USDT. بعد الإرسال لا يمكن التراجع عن تحويل البلوكتشين."},
+    {q:"أرسلت على شبكة خاطئة، ماذا أفعل؟",a:"تواصل مع فريق الدعم فورًا مع رقم الطلب ومعرّف التحويل (TXID). قد لا يكون استرجاع المبلغ ممكنًا في كل الحالات، لذلك تأكد من الشبكة والعنوان قبل الإرسال."},
+    {q:"هل يمكنني شراء USDT؟",a:"الشراء غير متاح حاليًا، والخدمة المتاحة هي البيع واستلام المال بالشيقل أو الدينار أو الدولار."},
+    {q:"هل أحتاج مشاركة مفتاحي الخاص؟",a:"أبدًا. لن نطلب منك مفتاحًا خاصًا أو عبارة استرداد أو كلمة مرور. لا تشاركها مع أي شخص."}
+  ];
+  function el(tag,cls,text){var d=document.createElement(tag);if(cls)d.className=cls;if(text)d.textContent=text;return d}
+  function contacts(b){
+    var links=[];
+    if(WA)links.push(["واتساب","https://wa.me/"+WA.replace(/\D/g,"")]);
+    if(TG)links.push(["تيليجرام","https://t.me/"+TG.replace(/^@/,"")]);
+    if(!links.length)return;
+    b.appendChild(el("div","ct-t","لم تجد جوابك؟ تواصل معنا:"));
+    var row=el("div","ct-row");
+    links.forEach(function(l){var a=el("a","ct",l[0]);a.href=l[1];a.target="_blank";a.rel="noopener noreferrer";row.appendChild(a)});
+    b.appendChild(row);
   }
-  async function init(){
-    if(WORKER_URL){
-      sample=async function(){
-        var res=await fetch(WORKER_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(pending)});
-        if(res.status===429){var e=new Error("rate");e.code="rate_limited";throw e}
-        if(!res.ok) throw new Error("bad");
-        var j=await res.json();
-        return {text:j.text||""};
-      };
-      return;
-    }
-    try{ if(window.claude&&window.claude.use) sample=await window.claude.use("sample"); }catch(e){}
-    if(!sample){ add("a","الدعم الذكي غير متاح في هذا العرض حاليًا."); $("ch-i").disabled=true; $("ch-s").disabled=true; }
+  function list(){
+    var b=$("ch-b"); b.textContent="";
+    b.appendChild(el("div","m a","أهلًا! اختر سؤالك ويظهر الجواب مباشرة."));
+    FAQ.forEach(function(f,i){var x=el("button","fq",f.q);x.type="button";x.onclick=function(){show(i)};b.appendChild(x)});
+    contacts(b); b.scrollTop=0;
   }
-  function openChat(){
-    $("chat").hidden=false; $("fab").setAttribute("aria-expanded","true");
-    if(!ready) ready=init();
-    $("ch-i").focus();
+  function show(i){
+    var b=$("ch-b"); b.textContent="";
+    b.appendChild(el("div","m u",FAQ[i].q));
+    b.appendChild(el("div","m a",FAQ[i].a));
+    var back=el("button","fq back","← كل الأسئلة"); back.type="button"; back.onclick=list; b.appendChild(back);
+    contacts(b); b.scrollTop=0;
   }
-  function closeChat(){ $("chat").hidden=true; $("fab").setAttribute("aria-expanded","false"); }
-  async function send(t){
-    t=(t||"").trim(); if(!t||busy) return;
-    var q=$("qs"); if(q) q.remove();
-    add("u",t); $("ch-i").value="";
-    if(!ready) ready=init();
-    busy=true; $("ch-s").disabled=true;
-    var el=add("a","…");
-    await ready;
-    if(!sample){ el.textContent="الدعم الذكي غير متاح حاليًا."; busy=false; return; }
-    hist.push({role:"user",content:t});
-    var tr=hist.slice(-7,-1).map(function(m){return (m.role==="user"?"العميل: ":"المساعد: ")+m.content}).join("\n");
-    var prompt=INSTR+(tr?"\n\nالمحادثة السابقة:\n"+tr:"")+"\n\nرسالة العميل الجديدة:\n"+t;
-    try{
-      pending={message:t,history:tr};
-      var r=await sample(prompt,{cache:false,modelTier:"quick",onText:function(x){
-        el.textContent=(x.text&&x.text!=="Thinking...")?x.text:"…";
-        $("ch-b").scrollTop=$("ch-b").scrollHeight;
-      }});
-      el.textContent=r.text||"…"; hist.push({role:"assistant",content:r.text||""});
-    }catch(e){
-      hist.pop();
-      el.textContent=(e&&e.code==="rate_limited")?"المحادثة مشغولة، جرّب بعد قليل.":(e&&e.code==="not_granted")?"لم يتم السماح بتفعيل الدعم الذكي.":"تعذّر الرد الآن، حاول مرة ثانية.";
-    }
-    busy=false; $("ch-s").disabled=false; $("ch-i").focus();
-  }
-  $("fab").onclick=function(){ $("chat").hidden?openChat():closeChat(); };
+  function openChat(){$("chat").hidden=false;$("fab").setAttribute("aria-expanded","true");if(!$("ch-b").firstChild)list()}
+  function closeChat(){$("chat").hidden=true;$("fab").setAttribute("aria-expanded","false")}
+  $("fab").onclick=function(){$("chat").hidden?openChat():closeChat()};
   $("ch-x").onclick=closeChat;
-  $("ch-s").onclick=function(){send($("ch-i").value)};
-  $("ch-i").addEventListener("keydown",function(e){ if(e.key==="Enter"&&!e.isComposing){e.preventDefault();send($("ch-i").value)} });
-  $("qs").addEventListener("click",function(e){ var b=e.target.closest("button"); if(b) send(b.textContent); });
 })();
 </script>
 </body>
