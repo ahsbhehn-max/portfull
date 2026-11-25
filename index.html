@@ -492,7 +492,7 @@ footer{border-top:1px solid var(--line);padding:28px 0 40px;color:var(--muted);f
     "قواعد: لا تطلب أبدًا مفتاحًا خاصًا أو عبارة استرداد أو كلمات مرور، وحذّر العميل من مشاركتها. لا تعطِ نصائح استثمارية أو قانونية. لا تؤكد حالة طلب محدد لأنك لا تملك وصولًا إلى نظام الطلبات. لا تذكر عناوين محافظ إيداع ولا أرقام تواصل. إذا لم تعرف الجواب (مثل مدة التنفيذ المحددة) فاعترف بذلك واقترح التواصل مع فريق الدعم."
   ].join("\n");
   var hist=[], sample=null, busy=false, ready=null;
-  var WORKER_URL=(location.hostname.slice(-10)==="github.io")?"https://sparkling-lab-242dfluxpay-support.ahsbhehn.workers.dev":"", pending=null;
+  var WORKER_URL=/github\.io$/.test(location.hostname)?"https://sparkling-lab-242dfluxpay-support.ahsbhehn.workers.dev":"", pending=null;
   function add(cls,text){
     var d=document.createElement("div"); d.className="m "+cls; d.textContent=text;
     var b=$("ch-b"); b.appendChild(d); b.scrollTop=b.scrollHeight; return d;
