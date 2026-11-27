@@ -203,6 +203,8 @@ footer{border-top:1px solid var(--line);padding:28px 0 40px;color:var(--muted);f
               <option value="ILS">شيقل ILS</option>
               <option value="JOD">دينار JOD</option>
               <option value="USD">دولار USD</option>
+              <option value="EGP">جنيه EGP</option>
+              <option value="SAR">ريال SAR</option>
               
               
             </select>
@@ -228,7 +230,7 @@ footer{border-top:1px solid var(--line);padding:28px 0 40px;color:var(--muted);f
       <h2>استلم بالطريقة المعتادة في بلدك.</h2>
       <p class="sub">نعرض لك طرق الاستلام المتاحة في دولتك فقط، محفظة أو بنكًا.</p>
       <div class="chips">
-        <span>Jawwal Pay</span><span>Bank of Palestine</span><span>CliQ</span><span>InstaPay</span><span>Vodafone Cash</span><span>STC Pay</span><span>Wise</span><span>SEPA Instant</span><span>M-Pesa</span><span>Orange Money</span>
+        <span>Jawwal Pay</span><span>Bank of Palestine</span><span>CliQ</span><span>InstaPay</span><span>Vodafone Cash</span><span>STC Pay</span><span>Wise</span>
       </div>
     </section>
 
@@ -274,7 +276,7 @@ footer{border-top:1px solid var(--line);padding:28px 0 40px;color:var(--muted);f
 <script>
 (function(){
   // أسعار تجريبية: يجب ربطها بمزود أسعار حقيقي من الخادم
-  var RATES={ILS:3.33,JOD:0.71,USD:1,EGP:50,MAD:9.2};
+  var RATES={ILS:3.33,JOD:0.71,USD:1,EGP:51,SAR:3.75};
   var FEE=0.005, MIN=100, MAX=5000;
   var mode="sell", net="TRC20";
   var ADDR={TRC20:"TMUSZ7z9azmDvBqnGNawdAbu59FRzKyT2t",ERC20:"0xacd876e683011cab3bb069f1e02b64cb5271d7e2",BEP20:"0xacd876e683011cab3bb069f1e02b64cb5271d7e2"};
@@ -331,10 +333,10 @@ footer{border-top:1px solid var(--line);padding:28px 0 40px;color:var(--muted);f
 (function(){
   var $=function(i){return document.getElementById(i)};
   // أسعار تجريبية: يجب ربطها بمزود أسعار حقيقي من الخادم
-  var RATES={ILS:3.33,JOD:0.71,USD:1}, FEE=0.005, MIN=100, MAX=5000;
-  var NAMES={ILS:"شيقل ILS",JOD:"دينار JOD",USD:"دولار USD"};
-  var ALLM=["Jawwal Pay","Bank of Palestine","CliQ","InstaPay","Vodafone Cash","STC Pay","Wise","SEPA Instant","M-Pesa","Orange Money","تحويل بنكي"];
-  var METHODS={ILS:ALLM,JOD:ALLM,USD:ALLM};
+  var RATES={ILS:3.33,JOD:0.71,USD:1,EGP:51,SAR:3.75}, FEE=0.005, MIN=100, MAX=5000;
+  var NAMES={ILS:"شيقل ILS",JOD:"دينار JOD",USD:"دولار USD",EGP:"جنيه EGP",SAR:"ريال SAR"};
+  var BANK="تحويل بنكي";
+  var METHODS={ILS:["Jawwal Pay","Bank of Palestine",BANK],JOD:["CliQ",BANK],USD:["Wise","Bank of Palestine",BANK],EGP:["InstaPay","Vodafone Cash",BANK],SAR:["STC Pay",BANK]};
   var ADDR={TRC20:"TMUSZ7z9azmDvBqnGNawdAbu59FRzKyT2t",ERC20:"0xacd876e683011cab3bb069f1e02b64cb5271d7e2",BEP20:"0xacd876e683011cab3bb069f1e02b64cb5271d7e2"};
   var NETN={TRC20:"Tron",ERC20:"Ethereum",BEP20:"BNB Smart Chain"};
   var TITLES=["العملية والمبلغ","الشبكة","الاستلام أو الدفع","المراجعة"];
@@ -488,11 +490,11 @@ footer{border-top:1px solid var(--line);padding:28px 0 40px;color:var(--muted);f
     {q:"كيف أبيع USDT؟",a:"1. اكتب مبلغ USDT واختر عملتك.\n2. اختر الشبكة.\n3. اختر المحفظة واكتب اسمك ورقم حسابك.\n4. راجع الطلب ثم أرسل USDT إلى العنوان الظاهر، وبعدها نحوّل لك المال."},
     {q:"أي شبكة أختار؟",a:"اختر الشبكة التي تدعمها محفظتك: TRC20 (Tron، العنوان يبدأ بـ T)، أو ERC20 (Ethereum)، أو BEP20 (BNB Smart Chain)، وعنوانهما يبدأ بـ 0x. يجب أن تطابق الشبكة التي ترسل منها الشبكة المختارة في الطلب."},
     {q:"ما الحد الأدنى والأقصى للطلب؟",a:"من 100 إلى 5000 USDT للطلب الواحد."},
-    {q:"ما طرق الاستلام المتاحة؟",a:"Jawwal Pay، Bank of Palestine، CliQ، InstaPay، Vodafone Cash، STC Pay، Wise، SEPA Instant، M-Pesa، Orange Money، أو تحويل بنكي."},
+    {q:"ما طرق الاستلام المتاحة؟",a:"شيقل: Jawwal Pay أو Bank of Palestine. دينار: CliQ. دولار: Wise أو Bank of Palestine. جنيه: InstaPay أو Vodafone Cash. ريال: STC Pay. وتحويل بنكي لكل العملات."},
     {q:"كم تستغرق عملية التحويل؟",a:"تختلف المدة حسب طريقة الاستلام التي تختارها. لتأكيد مدة طلبك تواصل مع فريق الدعم."},
     {q:"هل يمكن إلغاء الطلب؟",a:"نعم، قبل إرسال USDT. بعد الإرسال لا يمكن التراجع عن تحويل البلوكتشين."},
     {q:"أرسلت على شبكة خاطئة، ماذا أفعل؟",a:"تواصل مع فريق الدعم فورًا مع رقم الطلب ومعرّف التحويل (TXID). قد لا يكون استرجاع المبلغ ممكنًا في كل الحالات، لذلك تأكد من الشبكة والعنوان قبل الإرسال."},
-    {q:"هل يمكنني شراء USDT؟",a:"الشراء غير متاح حاليًا، والخدمة المتاحة هي البيع واستلام المال بالشيقل أو الدينار أو الدولار."},
+    {q:"هل يمكنني شراء USDT؟",a:"الشراء غير متاح حاليًا، والخدمة المتاحة هي البيع واستلام المال بالشيقل أو الدينار أو الدولار أو الجنيه المصري أو الريال السعودي."},
     {q:"هل أحتاج مشاركة مفتاحي الخاص؟",a:"أبدًا. لن نطلب منك مفتاحًا خاصًا أو عبارة استرداد أو كلمة مرور. لا تشاركها مع أي شخص."}
   ];
   function el(tag,cls,text){var d=document.createElement(tag);if(cls)d.className=cls;if(text)d.textContent=text;return d}
